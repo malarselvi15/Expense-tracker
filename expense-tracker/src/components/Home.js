@@ -1,18 +1,28 @@
 import { useState } from "react";
+import axios from "axios";
 import { Container, TextField, Button, Typography, Paper, Box } from "@mui/material";
 
-const Home = ({ setExpenses }) => { // ✅ Receive setExpenses from props
+const Home = ({ setExpenses }) => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newExpense = { title, amount, date };
-    setExpenses(prevExpenses => [...prevExpenses, newExpense]); // ✅ Update expenses
-    setTitle("");
-    setAmount("");
-    setDate("");
+
+    try {
+      // Send expense data to backend
+      await axios.post("http://localhost:5000/add-expense", newExpense);
+
+      // Update UI
+      setExpenses(prevExpenses => [...prevExpenses, newExpense]);
+      setTitle("");
+      setAmount("");
+      setDate("");
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
   };
 
   return (

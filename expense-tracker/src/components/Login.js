@@ -18,7 +18,7 @@ const Login = ({ onLogin }) => {
       alignItems="center"
       minHeight="100vh"
       sx={{
-        backgroundImage: "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-mt37a6QGqjU4RxGT_A04UBC_G_5V3CeBxbdg93mYXhr9p3PdeBC64uV5MnpXP-5CtCs&usqp=CAU')", // Replace with your image URL
+        backgroundImage: "url('https://img.freepik.com/free-psd/back-school-podium-background_23-2150590250.jpg')", // Replace with your image URL
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
