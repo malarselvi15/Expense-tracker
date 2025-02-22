@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import ExpenseList from "./components/ExpenseList";
 import Login from "./components/Login";
+import ChartsPage from "./components/ChartsPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [expenses, setExpenses] = useState([
-    { id: 1, title: "Groceries", amount: 50, date: "2024-02-07" },
-    { id: 2, title: "Rent", amount: 500, date: "2024-02-01" },
-    { id: 3, title: "Electricity", amount: 100, date: "2024-02-05" }
-  ]);
+  const [expenses, setExpenses] = useState([]);
 
   // ✅ Check login state on page load
   useEffect(() => {
@@ -21,7 +18,15 @@ function App() {
     }
   }, []);
 
-  // ✅ Handle login & store in localStorage
+  // ✅ Fetch Expenses from MongoDB
+  useEffect(() => {
+    fetch("http://localhost:5000/api/expenses")
+      .then((response) => response.json())
+      .then((data) => setExpenses(data))
+      .catch((error) => console.error("Error fetching expenses:", error));
+  }, []);
+
+  // ✅ Handle login
   const handleLogin = () => {
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
@@ -33,9 +38,9 @@ function App() {
     localStorage.removeItem("isLoggedIn");
   };
 
-  // ✅ Fix: Delete Expense Function
+  // ✅ Handle Expense Deletion
   const handleDeleteExpense = (id) => {
-    setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== id));
+    setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense._id !== id));
   };
 
   return (
@@ -43,17 +48,8 @@ function App() {
       <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <Routes>
         <Route path="/" element={<Home setExpenses={setExpenses} />} />
-
-        {/* ✅ Protected Route for Expenses */}
-        <Route
-          path="/expenses"
-          element={isLoggedIn ? (
-            <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} />
-          ) : (
-            <Navigate to="/login" replace />
-          )}
-        />
-
+        <Route path="/expenses" element={<ExpenseList expenses={expenses} onDelete={handleDeleteExpense} />} />
+        <Route path="/charts" element={<ChartsPage expenses={expenses} />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
       </Routes>
     </Router>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Typography, Paper, Grid, Card, CardContent, Button } from "@mui/material";
-import ChartComponent from "./ChartComponent"; // Import the chart component
 
 const ExpenseList = () => {
   const [expenses, setExpenses] = useState([]);
@@ -21,14 +20,20 @@ const ExpenseList = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} style={{ padding: "20px", marginTop: "20px", backgroundColor: "#f5f5f5" }}>
+    <Container maxWidth={false} style={{ width: "90%", margin: "0 auto" }}>
+      <Paper 
+        elevation={3} 
+        style={{ 
+          padding: "30px", 
+          marginTop: "20px", 
+          backgroundColor: "#f5f5f5", 
+          width: "100%", 
+          boxSizing: "border-box" 
+        }}
+      >
         <Typography variant="h5" gutterBottom align="center" style={{ fontWeight: "bold" }}>
           Expense List
         </Typography>
-
-        {/* Expense Chart */}
-        <ChartComponent expenses={expenses} />
 
         {expenses.length === 0 ? (
           <Typography align="center" color="textSecondary">
