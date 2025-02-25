@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Typography, Paper, Grid, Card, CardContent, Button } from "@mui/material";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const ExpenseList = () => {
   const [expenses, setExpenses] = useState([]);
@@ -19,21 +21,62 @@ const ExpenseList = () => {
       .catch(error => console.error("Error deleting expense:", error));
   };
 
+  // Function to generate and download the PDF
+  const downloadReport = () => {
+    const doc = new jsPDF();
+    doc.text("Monthly Expense Report", 20, 20);
+
+    // Filter expenses for the current month
+    const currentMonth = new Date().getMonth() + 1; // Get current month (1-based index)
+    const currentYear = new Date().getFullYear();
+
+    const monthlyExpenses = expenses.filter((expense) => {
+      const expenseDate = new Date(expense.date);
+      return expenseDate.getMonth() + 1 === currentMonth && expenseDate.getFullYear() === currentYear;
+    });
+
+    if (monthlyExpenses.length === 0) {
+      alert("No expenses recorded for this month.");
+      return;
+    }
+
+    // Convert data into table format
+    const tableColumn = ["Title", "Amount", "Date"];
+    const tableRows = [];
+
+    monthlyExpenses.forEach(expense => {
+      const expenseData = [expense.title, `$${expense.amount}`, expense.date];
+      tableRows.push(expenseData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+    });
+
+    doc.save(`Expense_Report_${currentMonth}_${currentYear}.pdf`);
+  };
+
   return (
     <Container maxWidth={false} style={{ width: "90%", margin: "0 auto" }}>
       <Paper 
         elevation={3} 
-        style={{ 
-          padding: "30px", 
-          marginTop: "20px", 
-          backgroundColor: "#f5f5f5", 
-          width: "100%", 
-          boxSizing: "border-box" 
-        }}
+        style={{ padding: "30px", marginTop: "20px", backgroundColor: "#f5f5f5", width: "100%", boxSizing: "border-box" }}
       >
         <Typography variant="h5" gutterBottom align="center" style={{ fontWeight: "bold" }}>
           Expense List
         </Typography>
+
+        {/* Download Report Button */}
+        <Button 
+          variant="contained" 
+          color="primary" 
+          style={{ marginBottom: "20px" }} 
+          onClick={downloadReport}
+        >
+          Download Monthly Report 📄
+        </Button>
 
         {expenses.length === 0 ? (
           <Typography align="center" color="textSecondary">
